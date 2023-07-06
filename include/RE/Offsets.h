@@ -496,4 +496,5 @@ namespace RE::Offset
 	constexpr auto TlsIndex = RELOCATION_ID(528600, 415542);
 	constexpr auto D3D11Device = RELOCATION_ID(524729, 411348);
 	constexpr auto RendererShadowStateInstance = RELOCATION_ID(524773, 388819);
+	constexpr auto GlobalStateCounter = RELOCATION_ID(514157, 400305);
 }
