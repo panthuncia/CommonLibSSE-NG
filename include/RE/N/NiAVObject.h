@@ -28,7 +28,7 @@ namespace RE
 		{
 			kNone = 0,
 			kDirty = 1 << 0,
-			kDisableCollision = 8193
+			kDisableCollision = 1 << 13
 		};
 
 		float                                 time;   // 0
@@ -115,6 +115,8 @@ namespace RE
 		SKYRIM_REL_VR_VIRTUAL void        PostAttachUpdate();                                                                                 // 33
 		SKYRIM_REL_VR_VIRTUAL void        OnVisible(NiCullingProcess& a_process);                                                             // 34 - { return; }
 
+		[[nodiscard]] NiAVObject*         Clone();
+		void                              CullGeometry(bool a_cull);
 		void                              CullNode(bool a_cull);
 		[[nodiscard]] bool                GetAppCulled() const;
 		[[nodiscard]] bhkCollisionObject* GetCollisionObject() const;

@@ -2,6 +2,8 @@
 
 namespace RE
 {
+	class BGSSoundDescriptorForm;
+
 	namespace MagicSystem
 	{
 		enum class CannotCastReason
@@ -39,7 +41,9 @@ namespace RE
 			kTouch = 1,
 			kAimed = 2,
 			kTargetActor = 3,
-			kTargetLocation = 4
+			kTargetLocation = 4,
+
+			kTotal
 		};
 
 		enum class SoundID
@@ -83,5 +87,9 @@ namespace RE
 
 			kTotal
 		};
+
+		const char*             GetCannotCastString(CannotCastReason a_reason);
+		float                   GetMagicCasterTargetUpdateInterval();
+		BGSSoundDescriptorForm* GetMagicFailureSound(SpellType a_type);
 	}
 }

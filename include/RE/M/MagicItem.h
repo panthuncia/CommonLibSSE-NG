@@ -4,6 +4,9 @@
 #include "RE/B/BGSKeywordForm.h"
 #include "RE/B/BSTArray.h"
 #include "RE/B/BSTSmartPointer.h"
+#include "RE/E/EffectArchetypes.h"
+#include "RE/M/MagicItemDataCollector.h"
+#include "RE/M/MagicItemTraversalFunctor.h"
 #include "RE/M/MagicSystem.h"
 #include "RE/T/TESBoundObject.h"
 #include "RE/T/TESFullName.h"
@@ -105,12 +108,19 @@ namespace RE
 		virtual void                                   InitFromChunk(TESFile* a_mod) = 0;                            // 6F
 		virtual void                                   InitChunk() = 0;                                              // 70
 
-		[[nodiscard]] float       CalculateMagickaCost(Actor* a_caster) const;
-		[[nodiscard]] float       CalculateTotalGoldValue(Actor* a_caster = nullptr) const;
-		[[nodiscard]] Effect*     GetCostliestEffectItem(std::uint32_t a_arg1 = 5, bool a_arg2 = false);
-		[[nodiscard]] Data*       GetData();
-		[[nodiscard]] const Data* GetData() const;
-		[[nodiscard]] bool        IsValid() const;
+		[[nodiscard]] float                  CalculateMagickaCost(Actor* a_caster) const;
+		[[nodiscard]] float                  CalculateTotalGoldValue(Actor* a_caster = nullptr) const;
+		[[nodiscard]] MagicItemDataCollector CollectData() const;
+		[[nodiscard]] EffectSetting*         GetAVEffect() const;
+		[[nodiscard]] Effect*                GetCostliestEffectItem(MagicSystem::Delivery a_delivery = MagicSystem::Delivery::kTotal, bool a_positiveArea = false) const;
+		[[nodiscard]] Data*                  GetData();
+		[[nodiscard]] const Data*            GetData() const;
+		[[nodiscard]] bool                   IsValid() const;
+		[[nodiscard]] std::int32_t           GetLargestArea() const;
+		[[nodiscard]] std::uint32_t          GetLongestDuration() const;
+		[[nodiscard]] bool                   HasEffect(EffectArchetype a_archetype);
+		[[nodiscard]] bool                   IsPermanent() const;
+		void                                 Traverse(MagicItemTraversalFunctor& a_visitor) const;
 
 		// members
 		BSTArray<Effect*>           effects;          // 58

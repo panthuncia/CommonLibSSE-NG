@@ -15,11 +15,11 @@ namespace RE
 		~BSImagespaceShader() override;  // 00
 
 		// override (BSShader)
-		void Unk_02(void) override;  // 02
-		void Unk_03(void) override;  // 03
-		void Unk_06(void) override;  // 06
-		void Unk_07(void) override;  // 07
-		void Unk_09(void) override;  // 09
+		void Setup(ImageSpaceManager* a_manager, ImageSpaceEffectParam* a_param) override;  // 02
+		void ShutDown() override;                                                           // 03
+		bool IsActive() override;                                                           // 06
+		bool UpdateParams(ImageSpaceEffectParam* a_param) override;                         // 07
+		bool RestoreRenderStates(ImageSpaceEffectParam* a_param) override;                  // 09
 
 		// add
 		virtual void Unk_0A(void);  // 0A - { return; }

@@ -125,6 +125,8 @@ namespace RE
 			TraceStack(message.c_str(), a_stackID, a_severity);
 		}
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvarargs"
 		void IVirtualMachine::VTraceStack(VMStackID a_stackID, Severity a_severity, const char* a_fmt, ...)
 		{
 			assert(a_fmt);
@@ -142,6 +144,7 @@ namespace RE
 
 			TraceStack(buf.data(), a_stackID, a_severity);
 		}
+#pragma clang diagnostic pop
 
 #ifdef SKYRIM_CROSS_VR
 		void IVirtualMachine::ForEachBoundObject(VMHandle a_handle, IForEachScriptObjectFunctor* a_functor)

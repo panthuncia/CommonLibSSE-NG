@@ -1,6 +1,7 @@
 #include "RE/A/Actor.h"
 
 #include "RE/A/AIProcess.h"
+#include "RE/A/ActorMagicCaster.h"
 #include "RE/B/BGSAttackData.h"
 #include "RE/B/BGSColorForm.h"
 #include "RE/B/BGSDefaultObjectManager.h"
@@ -12,6 +13,7 @@
 #include "RE/E/ExtraCanTalkToPlayer.h"
 #include "RE/E/ExtraFactionChanges.h"
 #include "RE/E/ExtraLeveledCreature.h"
+#include "RE/F/FixedStrings.h"
 #include "RE/F/FormTraits.h"
 #include "RE/H/HighProcessData.h"
 #include "RE/I/InventoryEntryData.h"
@@ -70,6 +72,13 @@ namespace RE
 		return false;
 	}
 
+	void Actor::AddCastPower(SpellItem* a_power)
+	{
+		using func_t = decltype(&Actor::AddCastPower);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37787, 38736) };
+		return func(this, a_power);
+	}
+
 	bool Actor::AddSpell(SpellItem* a_spell)
 	{
 		using func_t = decltype(&Actor::AddSpell);
@@ -102,6 +111,13 @@ namespace RE
 		}
 
 		xTalk->talk = a_talk;
+	}
+
+	void Actor::CastPermanentMagic(bool a_wornItemEnchantments, bool a_baseSpells, bool a_raceSpells, bool a_everyActorAbility)
+	{
+		using func_t = decltype(&Actor::CastPermanentMagic);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37804, 38753) };
+		return func(this, a_wornItemEnchantments, a_baseSpells, a_raceSpells, a_everyActorAbility);
 	}
 
 	bool Actor::CanAttackActor(Actor* a_actor)
@@ -143,6 +159,13 @@ namespace RE
 		}
 	}
 
+	bool Actor::CanUseIdle(TESIdleForm* a_idle) const
+	{
+		using func_t = decltype(&Actor::CanUseIdle);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36224, 37205) };
+		return func(this, a_idle);
+	}
+
 	void Actor::ClearArrested()
 	{
 		auto* _currentProcess = GetActorRuntimeData().currentProcess;
@@ -181,6 +204,13 @@ namespace RE
 		using func_t = decltype(&Actor::DeselectSpell);
 		REL::Relocation<func_t> func{ RELOCATION_ID(37820, 38769) };
 		return func(this, a_spell);
+	}
+
+	void Actor::DispelAlteredStates(EffectArchetype a_exception)
+	{
+		using func_t = decltype(&Actor::DispelAlteredStates);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37864, 38819) };
+		return func(this, a_exception);
 	}
 
 	void Actor::DispelWornItemEnchantments()
@@ -245,6 +275,29 @@ namespace RE
 		using func_t = decltype(&Actor::GetActorValueModifier);
 		REL::Relocation<func_t> func{ RELOCATION_ID(37524, 38469) };
 		return func(this, a_modifier, a_value);
+	}
+
+	float Actor::GetAimAngle() const
+	{
+		bool aimActive{ false };
+		GetGraphVariableBool(FixedStrings::GetSingleton()->bAimActive, aimActive);
+		if (!aimActive) {
+			return GetAngleX();
+		}
+
+		float aimPitchCurrent;
+		GetGraphVariableFloat(FixedStrings::GetSingleton()->aimPitchCurrent, aimPitchCurrent);
+		return -aimPitchCurrent;
+	}
+
+	float Actor::GetAimHeading() const
+	{
+		const float heading = GetHeading(false);
+
+		float aimHeadingCurrent{ 0.0f };
+		GetGraphVariableFloat(FixedStrings::GetSingleton()->aimHeadingCurrent, aimHeadingCurrent);
+
+		return heading - aimHeadingCurrent;
 	}
 
 	InventoryEntryData* Actor::GetAttackingWeapon()
@@ -320,6 +373,22 @@ namespace RE
 		return nullptr;
 	}
 
+	TESShout* Actor::GetCurrentShout()
+	{
+		if (GetActorRuntimeData().currentProcess) {
+			return GetActorRuntimeData().currentProcess->GetCurrentShout();
+		}
+		return nullptr;
+	}
+
+	const TESShout* Actor::GetCurrentShout() const
+	{
+		if (GetActorRuntimeData().currentProcess) {
+			return GetActorRuntimeData().currentProcess->GetCurrentShout();
+		}
+		return nullptr;
+	}
+
 	InventoryEntryData* Actor::GetEquippedEntryData(bool a_leftHand) const
 	{
 		auto* _currentProcess = GetActorRuntimeData().currentProcess;
@@ -353,11 +422,19 @@ namespace RE
 		return GetActorRuntimeData().equippedWeight;
 	}
 
-	std::int32_t Actor::GetGoldAmount()
+	std::int32_t Actor::GetFactionRank(TESFaction* a_faction, bool a_isPlayer)
+	{
+		using func_t = decltype(&Actor::GetFactionRank);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36668, 37676) };
+		return func(this, a_faction, a_isPlayer);
+	}
+
+	std::int32_t Actor::GetGoldAmount(bool a_noInit)
 	{
 		const auto inv = GetInventory([](TESBoundObject& a_object) -> bool {
 			return a_object.IsGold();
-		});
+		},
+			a_noInit);
 
 		const auto dobj = BGSDefaultObjectManager::GetSingleton();
 		if (!dobj) {
@@ -426,6 +503,13 @@ namespace RE
 		return func(this, a_outMount);
 	}
 
+	double Actor::GetMoveDirectionRelativeToFacing()
+	{
+		using func_t = decltype(&Actor::GetMoveDirectionRelativeToFacing);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36935, 37960) };
+		return func(this);
+	}
+
 	bool Actor::GetMountedBy(NiPointer<Actor>& a_outRider)
 	{
 		using func_t = decltype(&Actor::GetMountedBy);
@@ -471,9 +555,9 @@ namespace RE
 		return nullptr;
 	}
 
-	TESObjectARMO* Actor::GetSkin(BGSBipedObjectForm::BipedObjectSlot a_slot)
+	TESObjectARMO* Actor::GetSkin(BGSBipedObjectForm::BipedObjectSlot a_slot, bool a_noInit)
 	{
-		if (const auto worn = GetWornArmor(a_slot); worn) {
+		if (const auto worn = GetWornArmor(a_slot, a_noInit); worn) {
 			return worn;
 		}
 		return GetSkin();
@@ -504,6 +588,13 @@ namespace RE
 		return _vendorFaction;
 	}
 
+	float Actor::GetVoiceRecoveryTime()
+	{
+		using func_t = decltype(&Actor::GetVoiceRecoveryTime);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37854, 38808) };
+		return func(this);
+	}
+
 	float Actor::GetWarmthRating() const
 	{
 		using func_t = decltype(&Actor::GetWarmthRating);
@@ -511,11 +602,12 @@ namespace RE
 		return func(this);
 	}
 
-	TESObjectARMO* Actor::GetWornArmor(BGSBipedObjectForm::BipedObjectSlot a_slot)
+	TESObjectARMO* Actor::GetWornArmor(BGSBipedObjectForm::BipedObjectSlot a_slot, bool a_noInit)
 	{
 		const auto inv = GetInventory([](TESBoundObject& a_object) {
 			return a_object.IsArmor();
-		});
+		},
+			a_noInit);
 
 		for (const auto& [item, invData] : inv) {
 			const auto& [count, entry] = invData;
@@ -530,11 +622,12 @@ namespace RE
 		return nullptr;
 	}
 
-	TESObjectARMO* Actor::GetWornArmor(FormID a_formID)
+	TESObjectARMO* Actor::GetWornArmor(FormID a_formID, bool a_noInit)
 	{
 		const auto inv = GetInventory([=](TESBoundObject& a_object) {
 			return a_object.IsArmor() && a_object.GetFormID() == a_formID;
-		});
+		},
+			a_noInit);
 
 		for (const auto& [item, invData] : inv) {
 			const auto& [count, entry] = invData;
@@ -559,11 +652,25 @@ namespace RE
 		return func(this, a_ref, a_arg2);
 	}
 
+	bool Actor::HasOutfitItems(BGSOutfit* a_outfit)
+	{
+		using func_t = decltype(&Actor::HasOutfitItems);
+		REL::Relocation<func_t> func{ RELOCATION_ID(19265, 19691) };
+		return func(this, a_outfit);
+	}
+
 	bool Actor::HasPerk(BGSPerk* a_perk) const
 	{
 		using func_t = decltype(&Actor::HasPerk);
 		REL::Relocation<func_t> func{ Offset::Actor::HasPerk };
 		return func(this, a_perk);
+	}
+
+	bool Actor::HasShout(TESShout* a_shout) const
+	{
+		using func_t = decltype(&Actor::HasShout);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37829, 38783) };
+		return func(this, a_shout);
 	}
 
 	bool Actor::HasSpell(SpellItem* a_spell) const
@@ -633,6 +740,13 @@ namespace RE
 		return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kIsCommandedActor);
 	}
 
+	bool Actor::IsCurrentShout(SpellItem* a_spell)
+	{
+		using func_t = decltype(&Actor::IsCurrentShout);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37858, 38812) };
+		return func(this, a_spell);
+	}
+
 	bool Actor::IsEssential() const
 	{
 		return GetActorRuntimeData().boolFlags.all(BOOL_FLAGS::kEssential);
@@ -671,11 +785,11 @@ namespace RE
 		return func(this, a_actor);
 	}
 
-	bool Actor::IsLimbGone(std::uint32_t a_limb)
+	bool Actor::IsInCastPowerList(SpellItem* a_power)
 	{
-		using func_t = decltype(&Actor::IsLimbGone);
-		REL::Relocation<func_t> func{ RELOCATION_ID(19338, 19765) };
-		return func(this, a_limb);
+		using func_t = decltype(&Actor::IsInCastPowerList);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37793, 38742) };
+		return func(this, a_power);
 	}
 
 	bool Actor::IsInMidair() const
@@ -689,6 +803,20 @@ namespace RE
 	{
 		using func_t = decltype(&Actor::IsInRagdollState);
 		REL::Relocation<func_t> func{ RELOCATION_ID(36492, 37491) };
+		return func(this);
+	}
+
+	bool Actor::IsLimbGone(std::uint32_t a_limb)
+	{
+		using func_t = decltype(&Actor::IsLimbGone);
+		REL::Relocation<func_t> func{ RELOCATION_ID(19338, 19765) };
+		return func(this, a_limb);
+	}
+
+	bool Actor::IsMoving() const
+	{
+		using func_t = decltype(&Actor::IsMoving);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36928, 37953) };
 		return func(this);
 	}
 
@@ -756,6 +884,20 @@ namespace RE
 		return func(this);
 	}
 
+	void Actor::PlayASound(BSSoundHandle& a_result, FormID a_formID, bool a_arg3, std::uint32_t a_flags)
+	{
+		using func_t = decltype(&Actor::PlayASound);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36730, 37743) };
+		return func(this, a_result, a_formID, a_arg3, a_flags);
+	}
+
+	void Actor::ProcessVATSAttack(MagicCaster* a_caster, bool a_hasTargetAnim, TESObjectREFR* a_target, bool a_leftHand)
+	{
+		using func_t = decltype(&Actor::ProcessVATSAttack);
+		REL::Relocation<func_t> func{ RELOCATION_ID(40230, 41233) };
+		return func(this, a_caster, a_hasTargetAnim, a_target, a_leftHand);
+	}
+
 	void Actor::RemoveAnimationGraphEventSink(BSTEventSink<BSAnimationGraphEvent>* a_sink) const
 	{
 		BSAnimationGraphManagerPtr graphManager;
@@ -778,6 +920,13 @@ namespace RE
 		}
 	}
 
+	void Actor::RemoveCastScroll(SpellItem* a_spell, MagicSystem::CastingSource a_source)
+	{
+		using func_t = decltype(&Actor::RemoveCastScroll);
+		REL::Relocation<func_t> func{ RELOCATION_ID(37798, 38747) };
+		return func(this, a_spell, a_source);
+	}
+
 	void Actor::RemoveExtraArrows3D()
 	{
 		extraList.RemoveByType(ExtraDataType::kAttachedArrows3D);
@@ -797,6 +946,21 @@ namespace RE
 		return func(this, a_target, a_priority);
 	}
 
+	bool Actor::SetDefaultOutfit(BGSOutfit* a_outfit, bool a_update3D)
+	{
+		const auto npc = GetActorBase();
+		if (!npc || !a_outfit || npc->defaultOutfit == a_outfit) {
+			return false;
+		}
+		RemoveOutfitItems(npc->defaultOutfit);
+		npc->SetDefaultOutfit(a_outfit);
+		InitInventoryIfRequired();
+		if (!IsDisabled()) {
+			AddWornOutfit(a_outfit, a_update3D);
+		}
+		return true;
+	}
+
 	void Actor::SetLifeState(ACTOR_LIFE_STATE a_lifeState)
 	{
 		using func_t = decltype(&Actor::SetLifeState);
@@ -804,30 +968,17 @@ namespace RE
 		return func(this, a_lifeState);
 	}
 
-	bool Actor::SetOutfit(BGSOutfit* a_outfit, bool a_sleepOutfit)
+	bool Actor::SetSleepOutfit(BGSOutfit* a_outfit, bool a_update3D)
 	{
-		auto npc = GetActorBase();
-		if (!npc) {
+		const auto npc = GetActorBase();
+		if (!npc || !a_outfit || npc->sleepOutfit == a_outfit) {
 			return false;
 		}
-		if (a_sleepOutfit) {
-			if (npc->sleepOutfit == a_outfit) {
-				return false;
-			}
-			RemoveOutfitItems(npc->sleepOutfit);
-			npc->sleepOutfit = a_outfit;
-			npc->AddChange(TESNPC::ChangeFlags::kSleepOutfit);
-		} else {
-			if (npc->defaultOutfit == a_outfit) {
-				return false;
-			}
-			RemoveOutfitItems(npc->defaultOutfit);
-			npc->defaultOutfit = a_outfit;
-			npc->AddChange(TESNPC::ChangeFlags::kDefaultOutfit);
-		}
+		RemoveOutfitItems(npc->sleepOutfit);
+		npc->SetSleepOutfit(a_outfit);
 		InitInventoryIfRequired();
 		if (!IsDisabled()) {
-			AddWornOutfit(a_outfit, true);
+			AddWornOutfit(a_outfit, a_update3D);
 		}
 		return true;
 	}
@@ -896,6 +1047,13 @@ namespace RE
 		using func_t = decltype(&Actor::UpdateArmorAbility);
 		REL::Relocation<func_t> func{ Offset::Actor::UpdateArmorAbility };
 		return func(this, a_armor, a_extraData);
+	}
+
+	void Actor::UpdateAwakeSound(NiAVObject* a_obj3D)
+	{
+		using func_t = decltype(&Actor::UpdateAwakeSound);
+		REL::Relocation<func_t> func{ RELOCATION_ID(36943, 37968) };
+		return func(this, a_obj3D);
 	}
 
 	void Actor::Update3DModel()
@@ -1006,6 +1164,21 @@ namespace RE
 		using func_t = decltype(&Actor::VisitSpells);
 		REL::Relocation<func_t> func{ RELOCATION_ID(37827, 38781) };
 		return func(this, a_visitor);
+	}
+
+	std::uint8_t Actor::WhoIsCasting()
+	{
+		std::uint8_t result{ 0 };
+		for (auto i = 0; i < 4; i++) {
+			if (auto magicCaster = GetActorRuntimeData().magicCasters[i]) {
+				auto castingSource = magicCaster->GetCastingSource();
+				if (magicCaster->currentSpell) {
+					result |= 1 << stl::to_underlying(castingSource);
+				}
+			}
+		}
+
+		return result;
 	}
 
 	bool Actor::WouldBeStealing(const TESObjectREFR* a_target) const

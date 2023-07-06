@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RE/B/BSTArray.h"
 #include "RE/I/IMenu.h"
 #include "RE/M/MenuEventHandler.h"
 #include "RE/R/RaceSexCamera.h"
@@ -80,6 +81,8 @@ namespace RE
 		{
 			return REL::RelocateMember<RUNTIME_DATA>(this, 0x40, 0x50);
 		}
+
+		void ChangeName(const char* a_name);
 
 		// members
 #ifndef SKYRIM_CROSS_VR

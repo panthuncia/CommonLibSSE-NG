@@ -81,34 +81,61 @@ namespace RE
 
 		static ControlMap* GetSingleton();
 
-		std::int8_t      AllowTextInput(bool a_allow);
-		constexpr bool   AreControlsEnabled(UEFlag a_flags) const noexcept { return enabledControls.all(a_flags); }
-		std::uint32_t    GetMappedKey(std::string_view a_eventID, INPUT_DEVICE a_device, InputContextID a_context = InputContextID::kGameplay) const;
-		std::string_view GetUserEventName(std::uint32_t a_buttonID, INPUT_DEVICE a_device, InputContextID a_context = InputContextID::kGameplay) const;
-		constexpr bool   IsActivateControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kActivate); }
-		constexpr bool   IsConsoleControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kConsole); }
-		constexpr bool   IsFightingControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kFighting); }
-		constexpr bool   IsLookingControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kLooking); }
-		constexpr bool   IsMenuControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kMenu); }
-		constexpr bool   IsMainFourControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kMainFour); }
-		constexpr bool   IsMovementControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kMovement); }
-		constexpr bool   IsPOVSwitchControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kPOVSwitch); }
-		constexpr bool   IsSneakingControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kSneaking); }
-		constexpr bool   IsVATSControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kVATS); }
-		constexpr bool   IsWheelZoomControlsEnabled() const noexcept { return enabledControls.all(UEFlag::kWheelZoom); }
-		void             ToggleControls(UEFlag a_flags, bool a_enable);
+		std::int8_t               AllowTextInput(bool a_allow);
+		constexpr bool            AreControlsEnabled(UEFlag a_flags) const noexcept { return GetRuntimeData().enabledControls.all(a_flags); }
+		std::uint32_t             GetMappedKey(std::string_view a_eventID, INPUT_DEVICE a_device, InputContextID a_context = InputContextID::kGameplay) const;
+		std::string_view          GetUserEventName(std::uint32_t a_buttonID, INPUT_DEVICE a_device, InputContextID a_context = InputContextID::kGameplay) const;
+		constexpr PC_GAMEPAD_TYPE GetGamePadType() const noexcept { return GetRuntimeData().gamePadMapType.get(); }
+		constexpr bool            IsActivateControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kActivate); }
+		constexpr bool            IsConsoleControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kConsole); }
+		constexpr bool            IsFightingControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kFighting); }
+		constexpr bool            IsLookingControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kLooking); }
+		constexpr bool            IsMenuControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kMenu); }
+		constexpr bool            IsMainFourControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kMainFour); }
+		constexpr bool            IsMovementControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kMovement); }
+		constexpr bool            IsPOVSwitchControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kPOVSwitch); }
+		constexpr bool            IsSneakingControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kSneaking); }
+		constexpr bool            IsVATSControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kVATS); }
+		constexpr bool            IsWheelZoomControlsEnabled() const noexcept { return GetRuntimeData().enabledControls.all(UEFlag::kWheelZoom); }
+		void                      ToggleControls(UEFlag a_flags, bool a_enable);
+
+		struct RUNTIME_DATA
+		{
+#define RUNTIME_DATA_CONTENT                                                                        \
+	BSTArray<LinkedMapping>                          linkedMappings;               /* 0E8, VR 108*/ \
+	BSTArray<InputContextID>                         contextPriorityStack;         /* 100, VR 120*/ \
+	stl::enumeration<UEFlag, std::uint32_t>          enabledControls;              /* 118, VR 138*/ \
+	stl::enumeration<UEFlag, std::uint32_t>          unk11C;                       /* 11C, VR 13C*/ \
+	std::int8_t                                      textEntryCount;               /* 120, VR 140*/ \
+	bool                                             ignoreKeyboardMouse;          /* 121, VR 141*/ \
+	bool                                             ignoreActivateDisabledEvents; /* 122, VR 142*/ \
+	std::uint8_t                                     pad123;                       /* 123, VR 143*/ \
+	stl::enumeration<PC_GAMEPAD_TYPE, std::uint32_t> gamePadMapType;               /* 124, VR 144*/
+			RUNTIME_DATA_CONTENT
+		};
+		static_assert(sizeof(RUNTIME_DATA) == 0x40);
+
+		//members
 
 		// members
-		InputContext*                                    controlMap[InputContextID::kTotal];  // 060
-		BSTArray<LinkedMapping>                          linkedMappings;                      // 0E8
-		BSTArray<InputContextID>                         contextPriorityStack;                // 100
-		stl::enumeration<UEFlag, std::uint32_t>          enabledControls;                     // 118
-		stl::enumeration<UEFlag, std::uint32_t>          unk11C;                              // 11C
-		std::int8_t                                      textEntryCount;                      // 120
-		bool                                             ignoreKeyboardMouse;                 // 121
-		bool                                             ignoreActivateDisabledEvents;        // 122
-		std::uint8_t                                     pad123;                              // 123
-		stl::enumeration<PC_GAMEPAD_TYPE, std::uint32_t> gamePadMapType;                      // 124
+		InputContext* controlMap[InputContextID::kTotal];  // 060
+#ifndef SKYRIM_CROSS_VR
+		RUNTIME_DATA_CONTENT;                              // 0E8, VR 108
+#endif
+		[[nodiscard]] inline RUNTIME_DATA& GetRuntimeData() noexcept
+		{
+			return REL::RelocateMember<RUNTIME_DATA>(this, 0xE8, 0x108);
+		}
+
+		[[nodiscard]] inline const RUNTIME_DATA& GetRuntimeData() const noexcept
+		{
+			return REL::RelocateMember<RUNTIME_DATA>(this, 0xE8, 0x108);
+		}
 	};
+#ifndef ENABLE_SKYRIM_VR
 	static_assert(sizeof(ControlMap) == 0x128);
+#elif !defined(ENABLE_SKYRIM_SE) && !defined(ENABLE_SKYRIM_AE)
+	//static_assert(sizeof(ControlMap) == 0x148);  // VS seems to choke even though this should be right
+#endif
 }
+#undef RUNTIME_DATA_CONTENT

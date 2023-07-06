@@ -56,6 +56,27 @@ namespace RE
 		return func(this, a_activator, a_arg2, a_object, a_count, a_defaultProcessingOnly);
 	}
 
+	ModelReferenceEffect* TESObjectREFR::ApplyArtObject(BGSArtObject* a_artObject, float a_duration, TESObjectREFR* a_facingRef, bool a_faceTarget, bool a_attachToCamera, NiAVObject* a_attachNode, bool a_interfaceEffect)
+	{
+		using func_t = decltype(&TESObjectREFR::ApplyArtObject);
+		REL::Relocation<func_t> func{ RELOCATION_ID(22289, 22769) };
+		return func(this, a_artObject, a_duration, a_facingRef, a_faceTarget, a_attachToCamera, a_attachNode, a_interfaceEffect);
+	}
+
+	ShaderReferenceEffect* TESObjectREFR::ApplyEffectShader(TESEffectShader* a_effectShader, float a_duration, TESObjectREFR* a_facingRef, bool a_faceTarget, bool a_attachToCamera, NiAVObject* a_attachNode, bool a_interfaceEffect)
+	{
+		using func_t = decltype(&TESObjectREFR::ApplyEffectShader);
+		REL::Relocation<func_t> func{ RELOCATION_ID(19446, 19872) };
+		return func(this, a_effectShader, a_duration, a_facingRef, a_faceTarget, a_attachToCamera, a_attachNode, a_interfaceEffect);
+	}
+
+	bool TESObjectREFR::CanBeMoved()
+	{
+		using func_t = decltype(&TESObjectREFR::CanBeMoved);
+		REL::Relocation<func_t> func{ RELOCATION_ID(19244, 19670) };
+		return func(this);
+	}
+
 	ObjectRefHandle TESObjectREFR::CreateRefHandle()
 	{
 		return GetHandle();
@@ -294,19 +315,18 @@ namespace RE
 
 		return height;
 	}
-
 	auto TESObjectREFR::GetInventory()
 		-> InventoryItemMap
 	{
-		return GetInventory([](TESBoundObject&) { return true; });
+		return GetInventory(DEFAULT_INVENTORY_FILTER, false);
 	}
 
-	auto TESObjectREFR::GetInventory(std::function<bool(TESBoundObject&)> a_filter)
+	auto TESObjectREFR::GetInventory(std::function<bool(TESBoundObject&)> a_filter, bool a_noInit)
 		-> InventoryItemMap
 	{
 		InventoryItemMap results;
 
-		auto invChanges = GetInventoryChanges();
+		auto invChanges = GetInventoryChanges(a_noInit);
 		if (invChanges && invChanges->entryList) {
 			for (auto& entry : *invChanges->entryList) {
 				if (entry && entry->object && a_filter(*entry->object)) {
@@ -355,9 +375,9 @@ namespace RE
 		return results;
 	}
 
-	std::int32_t TESObjectREFR::GetInventoryCount()
+	std::int32_t TESObjectREFR::GetInventoryCount(bool a_noInit)
 	{
-		auto         counts = GetInventoryCounts();
+		auto         counts = GetInventoryCounts(DEFAULT_INVENTORY_FILTER, a_noInit);
 		std::int32_t total = 0;
 		for (auto& elem : counts) {
 			total += elem.second;
@@ -368,13 +388,13 @@ namespace RE
 	auto TESObjectREFR::GetInventoryCounts()
 		-> InventoryCountMap
 	{
-		return GetInventoryCounts([](TESBoundObject&) { return true; });
+		return GetInventoryCounts(DEFAULT_INVENTORY_FILTER, false);
 	}
 
-	auto TESObjectREFR::GetInventoryCounts(std::function<bool(TESBoundObject&)> a_filter)
+	auto TESObjectREFR::GetInventoryCounts(std::function<bool(TESBoundObject&)> a_filter, bool a_noInit)
 		-> InventoryCountMap
 	{
-		auto              itemMap = GetInventory(std::move(a_filter));
+		auto              itemMap = GetInventory(std::move(a_filter), a_noInit);
 		InventoryCountMap results;
 		for (const auto& [key, value] : itemMap) {
 			results[key] = value.first;
@@ -382,9 +402,14 @@ namespace RE
 		return results;
 	}
 
-	InventoryChanges* TESObjectREFR::GetInventoryChanges()
+	// this does not behave like Skyrim's implementation; Skyrim's does not attempt to initialize the container.
+	// which is why we have to add "no_init" here if we don't want that to happen.
+	InventoryChanges* TESObjectREFR::GetInventoryChanges(bool a_noInit)
 	{
 		if (!extraList.HasType<ExtraContainerChanges>()) {
+			if (a_noInit) {
+				return nullptr;
+			}
 			if (!InitInventoryIfRequired()) {
 				ForceInitInventoryChanges();
 			}
@@ -579,20 +604,6 @@ namespace RE
 		return func(this, a_ignoreContainerExtraData);
 	}
 
-	ModelReferenceEffect* TESObjectREFR::InstantiateHitArt(BGSArtObject* a_art, float a_dur, TESObjectREFR* a_facingRef, bool a_faceTarget, bool a_attachToCamera, NiAVObject* a_attachNode, bool a_interfaceEffect)
-	{
-		using func_t = decltype(&TESObjectREFR::InstantiateHitArt);
-		REL::Relocation<func_t> func{ RELOCATION_ID(22289, 22769) };
-		return func(this, a_art, a_dur, a_facingRef, a_faceTarget, a_attachToCamera, a_attachNode, a_interfaceEffect);
-	}
-
-	ShaderReferenceEffect* TESObjectREFR::InstantiateHitShader(TESEffectShader* a_shader, float a_dur, TESObjectREFR* a_facingRef, bool a_faceTarget, bool a_attachToCamera, NiAVObject* a_attachNode, bool a_interfaceEffect)
-	{
-		using func_t = decltype(&TESObjectREFR::InstantiateHitShader);
-		REL::Relocation<func_t> func{ RELOCATION_ID(19446, 19872) };
-		return func(this, a_shader, a_dur, a_facingRef, a_faceTarget, a_attachToCamera, a_attachNode, a_interfaceEffect);
-	}
-
 	bool TESObjectREFR::Is3DLoaded() const
 	{
 		return Get3D() != nullptr;
@@ -675,6 +686,11 @@ namespace RE
 	bool TESObjectREFR::IsOffLimits()
 	{
 		return IsCrimeToActivate();
+	}
+
+	bool TESObjectREFR::IsPersistent() const
+	{
+		return (GetFormFlags() & RecordFlags::kPersistent) != 0;
 	}
 
 	float TESObjectREFR::IsPointDeepUnderWater(float a_zPos, TESObjectCELL* a_cell) const
@@ -1003,9 +1019,9 @@ namespace RE
 		return REL::RelocateVirtual<decltype(&TESObjectREFR::GetDecalGroup)>(0x9F, 0xA0, this);
 	}
 
-	void TESObjectREFR::Unk_A0()
+	bool TESObjectREFR::Unk_A0(NiAVObject* a_node, float& a_angleX, float& a_angleZ, NiPoint3& a_pos)
 	{
-		REL::RelocateVirtual<decltype(&TESObjectREFR::Unk_A0)>(0xA0, 0xA1, this);
+		return REL::RelocateVirtual<decltype(&TESObjectREFR::Unk_A0)>(0xA0, 0xA1, this, a_node, a_angleX, a_angleZ, a_pos);
 	}
 
 	void TESObjectREFR::UnequipItem(std::uint64_t a_arg1, TESBoundObject* a_object)

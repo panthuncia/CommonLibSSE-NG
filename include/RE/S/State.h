@@ -6,8 +6,6 @@
 #include "RE/N/NiTexture.h"
 #include "SKSE/Version.h"
 #include <DirectXMath.h>
-typedef DirectX::XMMATRIX XMMATRIX;
-typedef DirectX::XMVECTOR XMVECTOR;
 
 namespace RE
 {
@@ -16,17 +14,17 @@ namespace RE
 		//WARNING: Structs containing ViewData appear to break when returned via RelocateMember due to incorrect offsets.
 		struct alignas(16) ViewData
 		{
-			XMVECTOR viewUp;                            // 00
-			XMVECTOR viewRight;                         // 10
-			XMVECTOR viewForward;                       // 20
-			XMMATRIX viewMat;                           // 30
-			XMMATRIX projMat;                           // 70
-			XMMATRIX viewProjMat;                       // B0
-			XMMATRIX unknownMat1;                       // F0 - all 0?
-			XMMATRIX viewProjMatrixUnjittered;          // 130
-			XMMATRIX previousViewProjMatrixUnjittered;  // 170
-			XMMATRIX projMatrixUnjittered;              // 1B0
-			XMMATRIX unknownMat2;                       // 1F0 - all 0?
+			DirectX::XMVECTOR viewUp;                            // 00
+			DirectX::XMVECTOR viewRight;                         // 10
+			DirectX::XMVECTOR viewForward;                       // 20
+			DirectX::XMMATRIX viewMat;                           // 30
+			DirectX::XMMATRIX projMat;                           // 70
+			DirectX::XMMATRIX viewProjMat;                       // B0
+			DirectX::XMMATRIX unknownMat1;                       // F0 - all 0?
+			DirectX::XMMATRIX viewProjMatrixUnjittered;          // 130
+			DirectX::XMMATRIX previousViewProjMatrixUnjittered;  // 170
+			DirectX::XMMATRIX projMatrixUnjittered;              // 1B0
+			DirectX::XMMATRIX unknownMat2;                       // 1F0 - all 0?
 			float             viewPort[4];                       // 230 - NiRect<float> { left = 0, right = 1, top = 1, bottom = 0 }
 			NiPoint2          viewDepthRange;                    // 240
 			char              _pad0[0x8];                        // 248
@@ -48,18 +46,18 @@ namespace RE
 
 		struct CAMERASTATE_RUNTIME_DATA
 		{
-#ifndef ENABLE_SKYRIM_VR  // Non-VR
+#ifndef ENABLE_SKYRIM_VR                                                // Non-VR
 #	define CAMERASTATE_RUNTIME_DATA_CONTENT                                                                                                   \
 		ViewData camViewData;                                           /* 08 VR is BSTArray, Each array has 2 elements (one for each eye?) */ \
 		NiPoint3 posAdjust;                                             /* 20 */                                                               \
 		NiPoint3 currentPosAdjust;                                      /* 38 */                                                               \
 		NiPoint3 previousPosAdjust;                                     /* 50 */                                                               \
-#		elif !defined(ENABLE_SKYRIM_AE) && !defined(ENABLE_SKYRIM_SE)  // VR
-#	define CAMERASTATE_RUNTIME_DATA_CONTENT                                                                         \
-		BSTArray<ViewData> camViewData;       /* 08 VR is BSTArray, Each array has 2 elements (one for each eye?) */ \
-		BSTArray<NiPoint3> posAdjust;         /* 20 */                                                               \
-		BSTArray<NiPoint3> currentPosAdjust;  /* 38 */                                                               \
-		BSTArray<NiPoint3> previousPosAdjust; /* 50 */
+		#elif !defined(ENABLE_SKYRIM_AE) && !defined(ENABLE_SKYRIM_SE)  // VR
+#	define CAMERASTATE_RUNTIME_DATA_CONTENT                                                                                                   \
+		BSTArray<ViewData> camViewData;                                 /* 08 VR is BSTArray, Each array has 2 elements (one for each eye?) */ \
+		BSTArray<NiPoint3> posAdjust;                                   /* 20 */                                                               \
+		BSTArray<NiPoint3> currentPosAdjust;                            /* 38 */                                                               \
+		BSTArray<NiPoint3> previousPosAdjust;                           /* 50 */
 #else
 #	define CAMERASTATE_RUNTIME_DATA_CONTENT
 #endif
@@ -83,10 +81,10 @@ namespace RE
 			}
 
 			// members
-			NiCamera* referenceCamera;         /* 00 */
-			CAMERASTATE_RUNTIME_DATA_CONTENT;  // 08
+			NiCamera* referenceCamera;                          /* 00 */
+			CAMERASTATE_RUNTIME_DATA_CONTENT;                   // 08
 		};
-#ifndef ENABLE_SKYRIM_VR  // Non-VR
+#ifndef ENABLE_SKYRIM_VR                                        // Non-VR
 		static_assert(sizeof(CameraStateData) == 0x68);
 #elif !defined(ENABLE_SKYRIM_AE) && !defined(ENABLE_SKYRIM_SE)  // VR
 		static_assert(sizeof(CameraStateData) == 0x8);
@@ -98,7 +96,7 @@ namespace RE
 		public:
 			struct RUNTIME_DATA
 			{
-#if !defined(ENABLE_SKYRIM_AE) && !defined(ENABLE_SKYRIM_SE)  // VR
+#if !defined(ENABLE_SKYRIM_AE) && !defined(ENABLE_SKYRIM_SE)            // VR
 #	define RUNTIME_DATA_CONTENT                                                                                              \
 		uint32_t                  firstCameraStateIndex;                /*	058 VR   only ?*/                                  \
 		NiPointer<NiTexture>      defaultTextureBlack;                  /* SE 058, AE,VR 060 - "BSShader_DefHeightMap"*/      \
@@ -144,7 +142,7 @@ namespace RE
 #endif
 				RUNTIME_DATA_CONTENT;
 			};
-#ifndef ENABLE_SKYRIM_VR  // Non-VR
+#ifndef ENABLE_SKYRIM_VR                                        // Non-VR
 			static_assert(offsetof(RUNTIME_DATA, dynamicResolutionCurrentWidthScale) == 0xA4);
 #elif !defined(ENABLE_SKYRIM_AE) && !defined(ENABLE_SKYRIM_SE)  // VR
 			static_assert(offsetof(RUNTIME_DATA, dynamicResolutionCurrentWidthScale) == 0xAC);
@@ -210,7 +208,7 @@ namespace RE
 			bool                 useEarlyZ;                          // 055
 			RUNTIME_DATA_CONTENT;                                    // 058, VR 060
 		};
-#ifndef ENABLE_SKYRIM_VR  // Non-VR
+#ifndef ENABLE_SKYRIM_VR                                             // Non-VR
 		static_assert(offsetof(State, screenWidth) == 0x24);
 		static_assert(offsetof(State, frameBufferViewport) == 0x2C);
 		static_assert(offsetof(State, letterbox) == 0x51);

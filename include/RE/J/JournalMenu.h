@@ -26,6 +26,7 @@ namespace RE
 	{
 	public:
 		inline static constexpr auto      RTTI = RTTI_JournalMenu;
+		inline static constexpr auto      VTABLE = VTABLE_JournalMenu;
 		constexpr static std::string_view MENU_NAME = "Journal Menu";
 
 		struct RUNTIME_DATA

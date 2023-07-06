@@ -8,6 +8,7 @@ namespace RE
 	{
 	public:
 		inline static constexpr auto RTTI = RTTI_BSKeyboardDevice;
+		inline static constexpr auto VTABLE = VTABLE_BSKeyboardDevice;
 
 		struct Keys
 		{
@@ -55,7 +56,7 @@ namespace RE
 				kL = 0x26,
 				kSemicolon = 0x27,
 				kApostrophe = 0x28,
-				kTilda = 0x29,
+				kTilde = 0x29,
 				kLeftShift = 0x2A,
 				kBackslash = 0x2B,
 				kZ = 0x2C,
@@ -124,7 +125,10 @@ namespace RE
 				kDown = 0xD0,
 				kPageDown = 0xD1,
 				kInsert = 0xD2,
-				kDelete = 0xD3
+				kDelete = 0xD3,
+
+				kLeftWin = 0xDB,
+				kRightWin = 0xDC
 			};
 		};
 		using Key = Keys::Key;
@@ -134,6 +138,8 @@ namespace RE
 		// add
 		virtual void Unk_09(void) = 0;  // 09
 		virtual void Unk_0A(void) = 0;  // 0A
+	protected:
+		BSKeyboardDevice();
 	};
 	static_assert(sizeof(BSKeyboardDevice) == 0x70);
 }

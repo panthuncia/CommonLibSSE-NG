@@ -1,5 +1,7 @@
 #include "RE/A/AIProcess.h"
 
+#include "RE/B/BipedAnim.h"
+#include "RE/F/FixedStrings.h"
 #include "RE/F/FormTraits.h"
 #include "RE/H/HighProcessData.h"
 #include "RE/M/MiddleHighProcessData.h"
@@ -37,6 +39,11 @@ namespace RE
 		return middleHigh ? middleHigh->commandingActor : ActorHandle{};
 	}
 
+	TESShout* AIProcess::GetCurrentShout()
+	{
+		return high ? high->currentShout : nullptr;
+	}
+
 	TESForm* AIProcess::GetEquippedLeftHand()
 	{
 		return equippedObjects[Hands::kLeft];
@@ -57,6 +64,27 @@ namespace RE
 	bool AIProcess::GetIsSummonedCreature() const noexcept
 	{
 		return middleHigh && middleHigh->summonedCreature;
+	}
+
+	NiAVObject* AIProcess::GetMagicNode(const BSTSmartPointer<BipedAnim>& a_biped) const
+	{
+		if (middleHigh && a_biped) {
+			return a_biped->root->GetObjectByName(FixedStrings::GetSingleton()->npcRMagicNode);
+		}
+		return nullptr;
+	}
+
+	NiAVObject* AIProcess::GetWeaponNode(const BSTSmartPointer<BipedAnim>& a_biped) const
+	{
+		if (middleHigh) {
+			if (a_biped) {
+				return a_biped->root->GetObjectByName(FixedStrings::GetSingleton()->weapon);
+			} else {
+				return middleHigh->unk148;
+			}
+		} else {
+			return nullptr;
+		}
 	}
 
 	ObjectRefHandle AIProcess::GetOccupiedFurniture() const
@@ -156,6 +184,11 @@ namespace RE
 		return func(this, a_actor, a_location, a_magnitude);
 	}
 
+	bool AIProcess::PlayIdle(Actor* a_actor, TESIdleForm* a_idle, TESObjectREFR* a_target)
+	{
+		return SetupSpecialIdle(a_actor, DEFAULT_OBJECT::kActionIdle, a_idle, true, false, a_target);
+	}
+
 	void AIProcess::SetActorsDetectionEvent(Actor* a_actor, const NiPoint3& a_location, std::int32_t a_soundLevel, TESObjectREFR* a_ref)
 	{
 		using func_t = decltype(&AIProcess::SetActorsDetectionEvent);
@@ -189,6 +222,20 @@ namespace RE
 		if (middleHigh) {
 			middleHigh->update3DModel.set(a_flags);
 		}
+	}
+
+	bool AIProcess::SetupSpecialIdle(Actor* a_actor, DEFAULT_OBJECT a_action, TESIdleForm* a_idle, bool a_arg5, bool a_arg6, TESObjectREFR* a_target)
+	{
+		using func_t = decltype(&AIProcess::SetupSpecialIdle);
+		REL::Relocation<func_t> func{ RELOCATION_ID(38290, 39256) };
+		return func(this, a_actor, a_action, a_idle, a_arg5, a_arg6, a_target);
+	}
+
+	void AIProcess::StopCurrentIdle(Actor* a_actor, bool a_forceIdleStop)
+	{
+		using func_t = decltype(&AIProcess::StopCurrentIdle);
+		REL::Relocation<func_t> func{ RELOCATION_ID(38291, 39257) };
+		return func(this, a_actor, a_forceIdleStop);
 	}
 
 	void AIProcess::Update3DModel(Actor* a_actor)

@@ -9,6 +9,7 @@ namespace RE
 	{
 	public:
 		inline static constexpr auto RTTI = RTTI_BSWin32MouseDevice;
+		inline static constexpr auto VTABLE = VTABLE_BSWin32MouseDevice;
 
 		struct Keys
 		{
@@ -33,20 +34,19 @@ namespace RE
 		// override (BSMouseDevice)
 		void Initialize() override;           // 01
 		void Process(float a_arg1) override;  // 02
-		void Unk_03(void) override;           // 03
+		void Release() override;              // 03
 		void Reset() override;                // 08
-		void Unk_09(void) override;           // 09
+		void Reinitialize(void) override;     // 09
 
 		// members
-		std::uint64_t      unk78;  // 78
-		std::uint64_t      unk80;  // 80
-		std::uint64_t      unk88;  // 88
-		std::uint64_t      unk90;  // 90
-		std::uint64_t      unk98;  // 98
-		std::uint64_t      unkA0;  // A0
-		std::uint32_t      unkA8;  // A8
-		mutable BSSpinLock unkAC;  // AC
-		std::uint32_t      unkB4;  // B4
+		DirectInput8::IDirectInputDevice8A* dInputDevice;       // 78
+		DirectInput8::DIMOUSESTATE2         dInputPrevState{};  // 80
+		DirectInput8::DIMOUSESTATE2         dInputNextState{};  // 94
+		bool                                notInitialized;     // A8
+		mutable BSSpinLock                  reinitializeLock;   // AC
+
+	protected:
+		BSWin32MouseDevice();
 	};
 	static_assert(sizeof(BSWin32MouseDevice) == 0xB8);
 }

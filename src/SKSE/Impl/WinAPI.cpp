@@ -2,11 +2,15 @@
 
 #include <Windows.h>
 
+#undef FindFirstFile
+#undef FindNextFile
 #undef GetEnvironmentVariable
 #undef GetFileVersionInfo
 #undef GetFileVersionInfoSize
+#undef GetKeyNameText
 #undef GetModuleFileName
 #undef GetModuleHandle
+#undef GetPrivateProfileString
 #undef LoadLibrary
 #undef MessageBox
 #undef OutputDebugString
@@ -20,6 +24,52 @@ namespace SKSE::WinAPI
 	bool FreeLibrary(HMODULE a_module) noexcept
 	{
 		return ::FreeLibrary(reinterpret_cast<::HMODULE>(a_module));
+	}
+
+	[[nodiscard]] bool FindClose(void* a_findFile) noexcept
+	{
+		return static_cast<bool>(
+			::FindClose(static_cast<::HMODULE>(a_findFile)));
+	}
+
+	[[nodiscard]] void* FindFirstFile(
+		const char*       a_fileName,
+		WIN32_FIND_DATAA* a_findFileData) noexcept
+	{
+		return static_cast<void*>(
+			::FindFirstFileA(
+				static_cast<::LPCSTR>(a_fileName),
+				reinterpret_cast<::LPWIN32_FIND_DATAA>(a_findFileData)));
+	}
+
+	[[nodiscard]] void* FindFirstFile(
+		const wchar_t*    a_fileName,
+		WIN32_FIND_DATAW* a_findFileData) noexcept
+	{
+		return static_cast<void*>(
+			::FindFirstFileW(
+				static_cast<::LPCWSTR>(a_fileName),
+				reinterpret_cast<::LPWIN32_FIND_DATAW>(a_findFileData)));
+	}
+
+	[[nodiscard]] bool FindNextFile(
+		void*             a_findFile,
+		WIN32_FIND_DATAA* a_findFileData) noexcept
+	{
+		return static_cast<bool>(
+			::FindNextFileA(
+				static_cast<::HANDLE>(a_findFile),
+				reinterpret_cast<::LPWIN32_FIND_DATAA>(a_findFileData)));
+	}
+
+	[[nodiscard]] bool FindNextFile(
+		void*             a_findFile,
+		WIN32_FIND_DATAW* a_findFileData) noexcept
+	{
+		return static_cast<bool>(
+			::FindNextFileW(
+				static_cast<::HANDLE>(a_findFile),
+				reinterpret_cast<::LPWIN32_FIND_DATAW>(a_findFileData)));
 	}
 
 	void* GetCurrentModule() noexcept
@@ -112,6 +162,21 @@ namespace SKSE::WinAPI
 				reinterpret_cast<::LPDWORD>(a_handle)));
 	}
 
+	int GetKeyNameText(std::int32_t a_lParam, wchar_t* a_buffer, int a_size) noexcept
+	{
+		return ::GetKeyNameTextW(static_cast<::LONG>(a_lParam), static_cast<::LPWSTR>(a_buffer), a_size);
+	}
+
+	int GetKeyNameText(std::int32_t a_lParam, char* a_buffer, int a_size) noexcept
+	{
+		return ::GetKeyNameTextA(static_cast<::LONG>(a_lParam), static_cast<::LPSTR>(a_buffer), a_size);
+	}
+
+	std::int16_t GetKeyState(int nVirtKey) noexcept
+	{
+		return ::GetKeyState(nVirtKey);
+	}
+
 	std::size_t GetMaxPath() noexcept
 	{
 		return static_cast<std::size_t>(MAX_PATH);
@@ -155,8 +220,45 @@ namespace SKSE::WinAPI
 				static_cast<::LPCWSTR>(a_moduleName)));
 	}
 
-	void* GetProcAddress(void* a_module,
-		const char*            a_procName) noexcept
+	std::uint32_t GetPrivateProfileString(
+		const char*   a_appName,
+		const char*   a_keyName,
+		const char*   a_default,
+		char*         a_outString,
+		std::uint32_t a_size,
+		const char*   a_fileName) noexcept
+	{
+		return static_cast<std::uint32_t>(
+			::GetPrivateProfileStringA(
+				static_cast<::LPCSTR>(a_appName),
+				static_cast<::LPCSTR>(a_keyName),
+				static_cast<::LPCSTR>(a_default),
+				static_cast<::LPSTR>(a_outString),
+				static_cast<::DWORD>(a_size),
+				static_cast<::LPCSTR>(a_fileName)));
+	}
+
+	std::uint32_t GetPrivateProfileString(
+		const wchar_t* a_appName,
+		const wchar_t* a_keyName,
+		const wchar_t* a_default,
+		wchar_t*       a_outString,
+		std::uint32_t  a_size,
+		const wchar_t* a_fileName) noexcept
+	{
+		return static_cast<std::uint32_t>(
+			::GetPrivateProfileStringW(
+				static_cast<::LPCWSTR>(a_appName),
+				static_cast<::LPCWSTR>(a_keyName),
+				static_cast<::LPCWSTR>(a_default),
+				static_cast<::LPWSTR>(a_outString),
+				static_cast<::DWORD>(a_size),
+				static_cast<::LPCWSTR>(a_fileName)));
+	}
+
+	void* GetProcAddress(
+		void*       a_module,
+		const char* a_procName) noexcept
 	{
 		return reinterpret_cast<void*>(
 			::GetProcAddress(
@@ -250,6 +352,11 @@ namespace SKSE::WinAPI
     {
         return ::RegGetValueW(reinterpret_cast<::HKEY>(hkey), subKey, value, flags, type, data, length);
     }
+
+	int ShowCursor(bool bShow) noexcept
+	{
+		return ::ShowCursor(static_cast<::BOOL>(bShow));
+	}
 
 	void TerminateProcess(
 		void*        a_process,
@@ -356,4 +463,5 @@ namespace SKSE::WinAPI
 			static_cast<::LPCCH>(a_defaultChar),
 			static_cast<::LPBOOL>(a_usedDefaultChar));
 	}
+
 }

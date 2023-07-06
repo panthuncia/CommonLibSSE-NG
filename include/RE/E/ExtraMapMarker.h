@@ -70,12 +70,12 @@ namespace RE
 		kDLC02CastleKarstaag = 59,
 		kTotalLocationTypes,
 
-		kDoor,
-		kQuestTarget,
+		kDoor = 61,
+		kQuestTarget = 62,
 		kQuestTargetDoor,
-		kMultipleQuestTarget,
-		kPlayerSet,
-		kYouAreHere
+		kMultipleQuestTarget = kQuestTargetDoor,  // verify this
+		kPlayerSet = 64,
+		kYouAreHere = 65,
 	};
 
 	class MapMarkerData

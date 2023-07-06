@@ -8,9 +8,9 @@ namespace RE
 {
 	class GHeapMemVisitor;
 	class GHeapSegVisitor;
+	class GStatBag;
 	class GSysAllocPaged;
 	struct GAllocDebugInfo;
-	struct GStatBag;
 
 	class GMemoryHeap : public GListNode<GMemoryHeap>
 	{
@@ -235,8 +235,18 @@ namespace RE
 		bool                   _trackDebugInfo;  // C1
 		std::uint16_t          _padC2;           // C2
 		std::uint32_t          _padC4;           // C4
-		void*                  _unkC8;           // C8
-		void*                  _unkD0;           // D0
 	};
-	static_assert(sizeof(GMemoryHeap) == 0xD8);
+	static_assert(sizeof(GMemoryHeap) == 0xC8);
+
+	class GHeapAllocEngine;
+	class GHeapDebugStorage;
+
+	class GMemoryHeapPT : public GMemoryHeap
+	{
+	private:
+		// members
+		[[maybe_unused]] GHeapAllocEngine*  _engine;        // C8
+		[[maybe_unused]] GHeapDebugStorage* _debugStorage;  // D0
+	};
+	static_assert(sizeof(GMemoryHeapPT) == 0xD8);
 }

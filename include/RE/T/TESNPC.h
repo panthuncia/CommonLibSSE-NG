@@ -88,7 +88,7 @@ namespace RE
 				kLockpicking = 8,
 				kSneak = 9,
 				kAlchemy = 10,
-				kSpecchcraft = 11,
+				kSpeechcraft = 11,
 				kAlteration = 12,
 				kConjuration = 13,
 				kDestruction = 14,
@@ -256,9 +256,11 @@ namespace RE
 		bool                         IsInFaction(TESFaction* a_faction) const;
 		bool                         RemovePerk(BGSPerk* a_perk);
 		bool                         RemovePerks(const std::vector<BGSPerk*>& a_perks);
+		bool                         SetDefaultOutfit(BGSOutfit* a_outfit);
 		void                         SetFaceTexture(BGSTextureSet* a_textureSet);
 		void                         SetHairColor(BGSColorForm* a_hairColor);
 		void                         SetSkinFromTint(NiColorA* a_result, TintMask* a_tintMask, bool a_fromTint);
+		bool                         SetSleepOutfit(BGSOutfit* a_outfit);
 		void                         UpdateNeck(BSFaceGenNiNode* a_faceNode);
 
 		// members

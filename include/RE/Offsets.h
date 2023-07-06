@@ -40,7 +40,7 @@ namespace RE::Offset
 
 	namespace BGSFootstepManager
 	{
-		constexpr auto Singleton = RELOCATION_ID(517045, 401262);
+		constexpr auto Singleton = RELOCATION_ID(517045, 403553);
 	}
 
 	namespace BGSListForm
@@ -53,6 +53,17 @@ namespace RE::Offset
 		constexpr auto Save = RELOCATION_ID(34818, 35727);
 		constexpr auto Singleton = RELOCATION_ID(516860, 403340);
 		constexpr auto Load = RELOCATION_ID(34819, 35728);
+	}
+
+	namespace BGSSkillPerkTreeNode
+	{
+		constexpr auto Ctor = RELOCATION_ID(26592, 27263);
+	}
+
+	namespace BGSStoryEventManager
+	{
+		constexpr auto AddEvent = RELOCATION_ID(31576, 32359);
+		constexpr auto GetSingleton = RELOCATION_ID(22317, 22790);
 	}
 
 	namespace BGSStoryTeller
@@ -98,6 +109,11 @@ namespace RE::Offset
 		constexpr auto Dtor = RELOCATION_ID(69638, 71016);
 		constexpr auto Seek = RELOCATION_ID(69640, 71018);
 		constexpr auto SetEndianSwap = RELOCATION_ID(69643, 71021);
+	}
+
+	namespace BSScaleformTranslator
+	{
+		constexpr auto GetCachedString = RELOCATION_ID(67844, 69188);
 	}
 
 	namespace BSScript
@@ -167,6 +183,15 @@ namespace RE::Offset
 		constexpr auto Singleton = RELOCATION_ID(514705, 400863);
 	}
 
+	namespace CraftingSubMenus
+	{
+		namespace EnchantConstructMenu
+		{
+			constexpr auto RenameItem = RELOCATION_ID(50530, 51415);
+			constexpr auto UpdateInterface = RELOCATION_ID(50567, 51459);
+		}
+	}
+
 	namespace CRC32Calculator
 	{
 		constexpr auto SizeOf32 = RELOCATION_ID(66963, 12141);
@@ -177,6 +202,7 @@ namespace RE::Offset
 	namespace ExtraDataList
 	{
 		constexpr auto Add = RELOCATION_ID(12176, 12315);
+		constexpr auto SetCount = RELOCATION_ID(11471, 11617);
 		constexpr auto SetExtraFlags = RELOCATION_ID(11903, 12042);
 		constexpr auto SetInventoryChanges = RELOCATION_ID(11483, 11600);
 	}
@@ -185,6 +211,28 @@ namespace RE::Offset
 	{
 		constexpr auto Singleton = RELOCATION_ID(514622, 400782);
 	}
+
+#if !defined(ENABLE_SKYRIM_SE) && !defined(ENABLE_SKYRIM_VR)
+	namespace GASActionBufferData
+	{
+		constexpr auto Vtbl = RELOCATION_ID(0, 242366);
+	}
+
+	namespace GASDoAction
+	{
+		constexpr auto Vtbl = RELOCATION_ID(0, 242413);
+	}
+
+	namespace GASDoInitAction
+	{
+		constexpr auto Vtbl = RELOCATION_ID(0, 242414);
+	}
+
+	namespace GFxInitImportActions
+	{
+		constexpr auto Vtbl = RELOCATION_ID(0, 244866);
+	}
+#endif
 
 	namespace GFxLoader
 	{
@@ -196,6 +244,33 @@ namespace RE::Offset
 		constexpr auto InvokeNoReturn = RELOCATION_ID(80547, 82665);
 	}
 
+#if !defined(ENABLE_SKYRIM_SE) && !defined(ENABLE_SKYRIM_VR)
+	namespace GFxPlaceObject2
+	{
+		constexpr auto Vtbl = RELOCATION_ID(0, 242592);
+	}
+
+	namespace GFxPlaceObject3
+	{
+		constexpr auto Vtbl = RELOCATION_ID(0, 242593);
+	}
+
+	namespace GFxRemoveObject
+	{
+		constexpr auto Vtbl = RELOCATION_ID(0, 244863);
+	}
+
+	namespace GFxRemoveObject2
+	{
+		constexpr auto Vtbl = RELOCATION_ID(0, 244864);
+	}
+
+	namespace GFxSetBackgroundColor
+	{
+		constexpr auto Vtbl = RELOCATION_ID(0, 244865);
+	}
+#endif
+
 	namespace GFxValue
 	{
 		namespace ObjectInterface
@@ -203,7 +278,9 @@ namespace RE::Offset
 			constexpr auto AttachMovie = RELOCATION_ID(80197, 82219);
 			constexpr auto DeleteMember = RELOCATION_ID(80207, 82230);
 			constexpr auto GetArraySize = RELOCATION_ID(80214, 82237);
+			constexpr auto GetCxform = RELOCATION_ID(80215, 82238);
 			constexpr auto GetDisplayInfo = RELOCATION_ID(80216, 82239);
+			constexpr auto GetDisplayMatrix = RELOCATION_ID(80217, 82240);
 			constexpr auto GetElement = RELOCATION_ID(80218, 82241);
 			constexpr auto GetMember = RELOCATION_ID(80222, 82245);
 			constexpr auto GotoAndPlay = RELOCATION_ID(80230, 82253);
@@ -214,10 +291,13 @@ namespace RE::Offset
 			constexpr auto PushBack = RELOCATION_ID(80248, 82273);
 			constexpr auto RemoveElements = RELOCATION_ID(80252, 82280);
 			constexpr auto SetArraySize = RELOCATION_ID(80261, 82285);
+			constexpr auto SetCxform = RELOCATION_ID(80262, 82286);
 			constexpr auto SetDisplayInfo = RELOCATION_ID(80263, 82287);
+			constexpr auto SetDisplayMatrix = RELOCATION_ID(80264, 82288);
 			constexpr auto SetElement = RELOCATION_ID(80265, 82289);
 			constexpr auto SetMember = RELOCATION_ID(80268, 82292);
 			constexpr auto SetText = RELOCATION_ID(80270, 82293);
+			constexpr auto VisitMembers = RELOCATION_ID(80279, 82302);
 		}
 	}
 
@@ -333,6 +413,11 @@ namespace RE::Offset
 		constexpr auto Ctor = RELOCATION_ID(68936, 70287);
 	}
 
+	namespace NiPoint3
+	{
+		constexpr auto Zero = RELOCATION_ID(523887, 410468);
+	}
+
 	namespace NiRefObject
 	{
 		constexpr auto TotalObjectCount = RELOCATION_ID(523912, 410493);
@@ -372,6 +457,16 @@ namespace RE::Offset
 		constexpr auto Singleton = RELOCATION_ID(514706, 400864);
 	}
 
+	namespace RaceSexMenu
+	{
+		constexpr auto ChangeName = RELOCATION_ID(51540, 52415);
+	}
+
+	namespace ReferenceEffectController
+	{
+		constexpr auto Start = RELOCATION_ID(33961, 34761);
+	}
+
 	namespace Script
 	{
 		constexpr auto CompileAndRun = RELOCATION_ID(21416, 21890);
@@ -396,7 +491,7 @@ namespace RE::Offset
 	namespace SkyrimVM
 	{
 		constexpr auto QueuePostRenderCall = RELOCATION_ID(53144, 53955);
-        constexpr auto RelayEvent = RELOCATION_ID(53221, 54033);
+		constexpr auto RelayEvent = RELOCATION_ID(53221, 54033);
 		constexpr auto Singleton = RELOCATION_ID(514315, 400475);
 	}
 
@@ -448,11 +543,11 @@ namespace RE::Offset
 
 	namespace TESObjectREFR
 	{
+		constexpr auto FindReferenceFor3D = RELOCATION_ID(19323, 19750);
 		constexpr auto GetDisplayFullName = RELOCATION_ID(19354, 19781);
 		constexpr auto GetLock = RELOCATION_ID(19818, 20223);
 		constexpr auto GetOwner = RELOCATION_ID(19789, 20194);
 		constexpr auto GetStealValue = RELOCATION_ID(15807, 16045);
-		constexpr auto FindReferenceFor3D = RELOCATION_ID(19323, 19750);
 		constexpr auto InitInventoryIfRequired = RELOCATION_ID(15800, 16038);
 		constexpr auto MoveTo = RELOCATION_ID(56227, 56626);
 		constexpr auto PlayAnimation = RELOCATION_ID(14189, 14297);
@@ -490,11 +585,11 @@ namespace RE::Offset
 	}
 
 	constexpr auto CreateRefHandle = RELOCATION_ID(12193, 12326);
+	constexpr auto D3D11Device = RELOCATION_ID(524729, 411348);
 	constexpr auto DebugNotification = RELOCATION_ID(52050, 52933);
 	constexpr auto LookupReferenceByHandle = RELOCATION_ID(12204, 12332);
 	constexpr auto PlaySound = RELOCATION_ID(52054, 52939);
-	constexpr auto TlsIndex = RELOCATION_ID(528600, 415542);
-	constexpr auto D3D11Device = RELOCATION_ID(524729, 411348);
 	constexpr auto RendererShadowStateInstance = RELOCATION_ID(524773, 388819);
+	constexpr auto TlsIndex = RELOCATION_ID(528600, 415542);
 	constexpr auto GlobalStateCounter = RELOCATION_ID(514157, 400305);
 }

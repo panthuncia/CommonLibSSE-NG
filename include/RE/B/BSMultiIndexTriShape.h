@@ -3,6 +3,7 @@
 #include "RE/B/BSTriShape.h"
 #include "RE/N/NiColor.h"
 #include "RE/N/NiSmartPointer.h"
+#include <DirectXMath.h>
 
 namespace RE
 {

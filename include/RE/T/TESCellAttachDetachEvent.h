@@ -1,7 +1,7 @@
 #pragma once
 
+#include "RE/N/NiSmartPointer.h"
 #include "RE/T/TESObjectREFR.h"
-#include <cstdint>
 
 namespace RE
 {
@@ -9,8 +9,8 @@ namespace RE
 
 	struct TESCellAttachDetachEvent
 	{
-		TESObjectREFR* reference;  // 00
-		std::uint8_t   attached;   // 08	- 01 - attached, 00 - detached
+		NiPointer<TESObjectREFR> reference;  // 00
+		bool                     attached;   // 08	- 01 - attached, 00 - detached
 	};
 
 	static_assert(sizeof(TESCellAttachDetachEvent) == 0x10);

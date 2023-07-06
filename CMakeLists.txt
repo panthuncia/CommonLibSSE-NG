@@ -84,6 +84,7 @@ if (MSVC)
 			# disable warnings
 			/wd4005 # macro redefinition
 			/wd4061 # enumerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label
+			/wd4068 # unknown pragma
 			/wd4200 # nonstandard extension used : zero-sized array in struct/union
 			/wd4201 # nonstandard extension used : nameless struct/union
 			/wd4265 # 'type': class has virtual functions, but its non-trivial destructor is not virtual; instances of this class may not be destructed correctly

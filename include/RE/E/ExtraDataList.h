@@ -187,6 +187,9 @@ namespace RE
 		TESObjectREFR*        GetLinkedRef(BGSKeyword* a_keyword);
 		TESForm*              GetOwner();
 		SOUL_LEVEL            GetSoulLevel() const;
+		ObjectRefHandle       GetTeleportLinkedDoor();
+		void                  SetCount(std::uint16_t a_count);
+		void                  SetEncounterZone(BGSEncounterZone* a_zone);
 		void                  SetExtraFlags(ExtraFlags::Flag a_flags, bool a_enable);
 		void                  SetInventoryChanges(InventoryChanges* a_changes);
 		void                  SetOwner(TESForm* a_owner);

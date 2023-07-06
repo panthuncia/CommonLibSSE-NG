@@ -16,13 +16,15 @@
 
 namespace RE
 {
+	class Actor;
 	class bhkCollisionObject;
 	class bhkShape;
 	class bhkSimpleShapePhantom;
 	class BGSMaterialType;
-	class QueuedFile;
+	class BSLight;
 	class CombatController;
 	class MagicItem;
+	class QueuedFile;
 
 	class Projectile : public TESObjectREFR
 	{
@@ -53,12 +55,27 @@ namespace RE
 			BSTArray<WobbleControl>    wobble;          // 58
 		};
 
+		struct ProjectileRot
+		{
+		public:
+			// members
+			float x;
+			float z;
+		};
+		static_assert(sizeof(ProjectileRot) == 0x08);
+
 		struct LaunchData
 		{
+		public:
 			inline static constexpr auto RTTI = RTTI_Projectile__LaunchData;
 			inline static constexpr auto VTABLE = VTABLE_Projectile__LaunchData;
 
-			virtual ~LaunchData();
+			virtual ~LaunchData() = default;
+
+			LaunchData() = default;
+			LaunchData(BGSProjectile* a_bproj, Actor* a_shooter, const NiPoint3& a_origin, const ProjectileRot& a_angles);
+			LaunchData(Actor* a_shooter, const NiPoint3& a_origin, const ProjectileRot& a_angles, MagicItem* a_spell);
+			LaunchData(Actor* a_shooter, const NiPoint3& a_origin, const ProjectileRot& a_angles, TESAmmo* a_ammo, TESObjectWEAP* a_weap);
 
 			// members
 			NiPoint3                   origin;                 // 08
@@ -77,7 +94,7 @@ namespace RE
 			TESObjectCELL*             parentCell;             // 68
 			MagicItem*                 spell;                  // 70
 			MagicSystem::CastingSource castingSource;          // 78
-			std::uint32_t              unk7C;                  // 7C
+			std::uint32_t              pad7C;                  // 7C
 			EnchantmentItem*           enchantItem;            // 80
 			AlchemyItem*               poison;                 // 88
 			std::int32_t               area;                   // 90
@@ -86,7 +103,7 @@ namespace RE
 			bool                       alwaysHit;              // 9C
 			bool                       noDamageOutsideCombat;  // 9D
 			bool                       autoAim;                // 9E
-			bool                       unk9F;                  // 9F
+			bool                       chainShatter;           // 9F
 			bool                       useOrigin;              // A0
 			bool                       deferInitialization;    // A1
 			bool                       forceConeOfFire;        // A2
@@ -112,6 +129,43 @@ namespace RE
 			std::uint8_t                              unk49;               // 49
 		};
 		static_assert(sizeof(ImpactData) == 0x50);
+
+		enum class Flags
+		{
+			kNone = 0,
+			kUnk0 = 1 << 0,
+			kNotAddThreat = 1 << 1,
+			kUnk2 = 1 << 2,
+			kUnk3 = 1 << 3,
+			kIsTracer = 1 << 4,
+			kFading = 1 << 5,
+			kGravityUpdateModel = 1 << 6,
+			kUnk7 = 1 << 7,
+			kInited = 1 << 8,
+			kChainShatter = 1 << 9,
+			kUnk10 = 1 << 10,
+			kUnk11 = 1 << 11,
+			kAlwaysHit = 1 << 12,
+			kHitScan = 1 << 13,
+			kUnk14 = 1 << 14,
+			kDestroyAfterHit = 1 << 15,
+			kAddedToManager = 1 << 16,
+			kNoDamageOutsideCombat = 1 << 17,
+			kCanStartTrails = 1 << 18,
+			kAggressiveActor = 1 << 19,
+			kAddedVisualEffectOnGround = 1 << 20,
+			kAutoAim = 1 << 21,
+			kProcessedImpacts = 1 << 22,
+			kUnk23 = 1 << 23,
+			kUnk24 = 1 << 24,
+			kDestroyed = 1 << 25,
+			kUnk26 = 1 << 26,
+			kUnk27 = 1 << 27,
+			kIsDual = 1 << 28,
+			kUseOrigin = 1 << 29,
+			kUnk30 = 1 << 30,
+			kMoved = 1 << 31
+		};
 
 		~Projectile() override;  // 00
 
@@ -174,10 +228,15 @@ namespace RE
 		SKYRIM_REL_VR_VIRTUAL void                        Handle3DLoaded();                                                                                                                                                  // C0 - { return; }
 		[[nodiscard]] SKYRIM_REL_VR_VIRTUAL bool          ShouldUseDesiredTarget();                                                                                                                                          // C1 - { return 0; }
 
-		float GetHeight() const;
-		float GetSpeed() const;
+		BGSProjectile* GetProjectileBase() const;
+		float          GetHeight() const;
+		float          GetSpeed() const;
 
-		static BSPointerHandle<Projectile>* Launch(BSPointerHandle<Projectile>* a_result, LaunchData& a_data) noexcept;
+		static ProjectileHandle* Launch(ProjectileHandle* a_result, LaunchData& a_data) noexcept;
+		static ProjectileHandle* LaunchSpell(ProjectileHandle* a_result, Actor* a_shooter, SpellItem* a_spell, const NiPoint3& a_origin, const ProjectileRot& a_angles) noexcept;
+		static ProjectileHandle* LaunchSpell(ProjectileHandle* a_result, Actor* a_shooter, SpellItem* a_spell, MagicSystem::CastingSource a_source) noexcept;
+		static ProjectileHandle* LaunchArrow(ProjectileHandle* a_result, Actor* a_shooter, TESAmmo* a_ammo, TESObjectWEAP* a_weap, const NiPoint3& a_origin, const ProjectileRot& a_angles) noexcept;
+		static ProjectileHandle* LaunchArrow(ProjectileHandle* a_result, Actor* a_shooter, TESAmmo* a_ammo, TESObjectWEAP* a_weap) noexcept;
 
 		struct PROJECTILE_RUNTIME_DATA
 		{
@@ -189,7 +248,7 @@ namespace RE
 	mutable BSSpinLock         unk0E8;            /* 0E8 */                               \
 	NiPoint3                   velocity;          /* 0F0 */                               \
 	NiPoint3                   linearVelocity;    /* 0FC */                               \
-	void*                      unk108;            /* 108 - smart ptr */                   \
+	NiPointer<BSLight>         light;             /* 108 - smart ptr */                   \
 	void*                      unk110;            /* 110 - smart ptr */                   \
 	NiPointer<ActorCause>      actorCause;        /* 118 */                               \
 	ObjectRefHandle            shooter;           /* 120 */                               \
@@ -212,7 +271,8 @@ namespace RE
 	float                      livingTime;        /* 194 */                               \
 	float                      weaponDamage;      /* 198 */                               \
 	float                      transparency;      /* 19C - for beam disappearing */       \
-	std::uint64_t              unk1A0;            /* 1A0 */                               \
+	float                      explosionTimer;    /* 1A0 */                               \
+    std::uint32_t              unk1A4;            /* 1A4 */                               \
 	float                      unk1A8;            /* 1A8 */                               \
 	float                      unk1AC;            /* 1AC */                               \
 	TESObjectWEAP*             weaponSource;      /* 1B0 */                               \
@@ -221,7 +281,9 @@ namespace RE
 	std::uint32_t              unk1C4;            /* 1C4 - pad? */                        \
 	float                      scale;             /* 1C8 - for double cast model scale */ \
 	std::uint32_t              flags;             /* 1CC */                               \
-	std::uint64_t              unk1D0;            /* 1D0 */
+	bool                       unk1D0;            /* 1D0 */                               \
+    bool                       unk1D1;            /* 1D1 */                               \
+    std::uint8_t               unk1D2[6];         /* 1D2 */
 
 			PROJECTILE_RUNTIME_DATA_CONTENT
 		};
